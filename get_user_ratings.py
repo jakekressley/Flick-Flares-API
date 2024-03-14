@@ -89,6 +89,7 @@ def get_user_ratings(username):
                     "genres": genres,
                     "overview": movie_overview,
                     "hotness" : 0,
+                    "zscore" : 0,
                 }
                 scores.append(score_data)
                 #print("Title", movie_title, "Average: ", average, "User rated: ", user_rating)

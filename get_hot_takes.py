@@ -31,12 +31,15 @@ def get_hot_takes(scores):
 
         #hotness = (abs(weighted_average - user_score)) * weighted_average + weighted_votes
         #print("Title:", movie['title'], "votes:", num_votes,  "wVotes:", weighted_votes)
-
+        mu = 6.689
+        sigma = .8514
+        zscore = abs((user_score - avg_rating) / sigma)
+        movie['zscore'] = round(zscore, 2)
         movie['hotness'] = round(hotness, 2)
 
     scores.sort(key=lambda x: x['hotness'], reverse=True)
     for movie in scores:
-        print("Title:"+ movie['title'], ", User:", movie['user_rating'], "Avg:", movie['average'], "votes:", movie['votes'], ", hotness", movie['hotness'])
+        print("Title:"+ movie['title'], ", User:", movie['user_rating'], "Avg:", movie['average'], "votes:", movie['votes'], ", hotness", movie['hotness'], ", zscore:", movie['zscore'])
     return scores
 
 def mean(arr):
@@ -47,5 +50,5 @@ def std_dev(arr):
     variance = sum([((x - mu) ** 2) for x in arr]) / len(arr)
     return math.sqrt(variance)
 
-def z_score(x, mu, sigma):
-    return (x - mu) / sigma if sigma != 0 else 0
+def z_score(arr, mu, sigma):
+        return [(x - mu) / sigma if sigma != 0 else 0 for x in arr]

@@ -3,6 +3,7 @@ import os
 from db_connect import connect_to_db
 from dotenv import load_dotenv
 from get_average_scores import *
+import statistics
 
 load_dotenv()
 
@@ -25,10 +26,16 @@ genres_dict = {}
 for genre in genres_list.json()['genres']:
     genres_dict[genre['id']] = genre['name']
 
+
 #print(genres_dict)
 
 def get_top_movies():
     page_count = 1
+    
+    movie_scores = []
+
+    rating_total = 0
+    movie_total = 0
 
     # total stored 250 * 20 = 5000
     while page_count < 250:
@@ -41,13 +48,18 @@ def get_top_movies():
             movie_title = movie['title']
             tmdb_id = movie['id']
             dupe_check = collection.find_one({'tmdb_id': tmdb_id})
-            if dupe_check is not None:
-                continue
+            #if dupe_check is not None:
+                #continue
             movie_average = movie['vote_average']
             # movie is not out yet
             if (movie_average == 0):
                 continue
             print(movie['title'], movie['vote_average'], movie['vote_count'])
+            rating_total += movie['vote_average']
+            movie_total += 1
+
+            movie_scores.append(movie['vote_average'])
+
             movie_vote_count = movie['vote_count']
             movie_year = movie['release_date'][:4]
             movie_poster = movie['poster_path']
@@ -71,6 +83,9 @@ def get_top_movies():
             }
             collection.update_one({'tmdb_id' : tmdb_id}, {'$set' : model}, upsert=True)
         page_count += 1
+    # Average is 6.7
+    print("Average Rating:", rating_total / movie_total)
+    print(statistics.stdev(movie_scores))
 
 get_top_movies()
 # sets year and poster to None for troubleshooting
